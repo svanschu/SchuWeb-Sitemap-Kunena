@@ -1,11 +1,14 @@
 <?php
 /**
- * @package SchuWeb Sitemap
- *
- * @copyright (C) 2010 - 2022 Sven Schultschik. All rights reserved
- * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * @link http://www.schultschik.de
- **/
+ * @package     SchuWeb Sitemap
+ * @subpackage  schuweb_sitemap_kunena
+ * 
+ * @version     sw.build.version
+ * @copyright   Copyright (C) 2010 - 2023 Sven Schultschik. All rights reserved
+ * @license     GNU General Public License version 3
+ * @author      Sven Schultschik (extensions@schultschik.de)
+ * @link        https://extensions.schultschik.de
+ */
 
 defined('_JEXEC') or die;
 
@@ -15,30 +18,33 @@ use Kunena\Forum\Libraries\Factory\KunenaFactory;
 use Kunena\Forum\Libraries\Forum\Category\KunenaCategoryHelper;
 use Kunena\Forum\Libraries\Forum\Topic\KunenaTopicHelper;
 use Kunena\Forum\Libraries\Route\KunenaRoute;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\Uri\Uri;
 
 /** Handles Kunena forum structure */
 class schuweb_sitemap_kunena
 {
-    /*
-     * This function is called before a menu item is printed. We use it to set the
-     * proper uniqueid for the item
-     */
-
     static $profile;
     static $config;
 
-    static function getTree($sitemap, $parent, &$params)
+    /**
+     * @param \SchuWeb\Component\Sitemap\Site\Model\SitemapModel $sitemap
+     * @param \stdClass $parent
+     * @param \Joomla\Registry\Registry $params
+     * 
+     */
+    static function getTree(&$sitemap, &$parent, &$params)
     {
-        if ($sitemap->isNews) // This component does not provide news content. don't waste time/resources
+        // This component does not provide news content. don't waste time/resources
+        if ($sitemap->isNewssitemap())
             return false;
 
         // Make sure that we can load the kunena api
-        if (!schuweb_sitemap_kunena::loadKunenaApi()) {
+        if (!self::loadKunenaApi())
             return false;
-        }
 
         if (!self::$profile) {
-            self::$config = KunenaFactory::getConfig();;
+            self::$config = KunenaFactory::getConfig();
             self::$profile = KunenaFactory::getUser();
         }
 
@@ -64,13 +70,13 @@ class schuweb_sitemap_kunena
                 $catid = 0;
                 break;
             default:
-                return true;   // Do not expand links to posts
+                return true; // Do not expand links to posts
         }
 
         $include_topics = ArrayHelper::getValue($params, 'include_topics', 1);
         $include_topics = ($include_topics == 1
-            || ($include_topics == 2 && $sitemap->view == 'xml')
-            || ($include_topics == 3 && $sitemap->view == 'html'));
+            || ($include_topics == 2 && $sitemap->isXmlsitemap())
+            || ($include_topics == 3 && !$sitemap->isXmlsitemap()));
         $params['include_topics'] = $include_topics;
 
         $priority = ArrayHelper::getValue($params, 'cat_priority', $parent->priority);
@@ -116,42 +122,49 @@ class schuweb_sitemap_kunena
 
         $params['table_prefix'] = '#__kunena';
 
-        schuweb_sitemap_kunena::getCategoryTree($sitemap, $parent, $params, $catid);
+        self::getCategoryTree($sitemap, $parent, $params, $catid);
     }
 
     /*
      * Builds the Kunena's tree
      */
-    static function getCategoryTree($sitemap, $parent, &$params, $parentCat)
+    static function getCategoryTree(&$sitemap, &$parent, &$params, &$parentCat)
     {
         // Load categories
         $categories = KunenaCategoryHelper::getChildren($parentCat);
 
         /* get list of categories */
-        $sitemap->changeLevel(1);
         foreach ($categories as $cat) {
             $node = new stdclass;
             $node->id = $parent->id;
             $node->browserNav = $parent->browserNav;
-            $node->uid = 'com_kunenac' . $cat->id;
+            $id = $node->uid = 'com_kunenac' . $cat->id;
             $node->name = $cat->name;
             $node->priority = $params['cat_priority'];
             $node->changefreq = $params['cat_changefreq'];
+            $node->browserNav = $parent->browserNav;
+            $node->xmlInsertChangeFreq = $parent->xmlInsertChangeFreq;
+            $node->xmlInsertPriority = $parent->xmlInsertPriority;
 
-            $attribs = json_decode($sitemap->sitemap->attribs);
-            $node->xmlInsertChangeFreq = $attribs->xmlInsertChangeFreq;
-            $node->xmlInsertPriority = $attribs->xmlInsertPriority;
-
-            $node->link = KunenaRoute::normalize('index.php?option=com_kunena&view=category&catid=' . $cat->id);
+            $node->link = KunenaRoute::normalize(
+                new Uri(
+                    (string) 'index.php?option=com_kunena&view=category&catid=' . $cat->id
+                )
+            );
             $node->expandible = true;
             $node->secure = $parent->secure;
 
             $node->lastmod = $parent->lastmod;
             $node->modified = intval($cat->last_post_time);
 
-            if ($sitemap->printNode($node) !== FALSE) {
-                schuweb_sitemap_kunena::getCategoryTree($sitemap, $parent, $params, $cat->id);
-            }
+            if (!isset($parent->subnodes))
+                $parent->subnodes = new \stdClass();
+
+            $node->params = &$parent->params;
+
+            $parent->subnodes->$id = $node;
+
+            self::getCategoryTree($sitemap, $parent, $params, $cat->id);
         }
 
         if ($params['include_topics']) {
@@ -173,49 +186,64 @@ class schuweb_sitemap_kunena
                 $node = new stdclass;
                 $node->id = $parent->id;
                 $node->browserNav = $parent->browserNav;
-                $node->uid = 'com_kunenat' . $topic->id;
+                $id = $node->uid = 'com_kunenat' . $topic->id;
                 $node->name = $topic->subject;
                 $node->priority = $params['topic_priority'];
                 $node->changefreq = $params['topic_changefreq'];
 
-                $attribs = json_decode($sitemap->sitemap->attribs);
-                $node->xmlInsertChangeFreq = $attribs->xmlInsertChangeFreq;
-                $node->xmlInsertPriority = $attribs->xmlInsertPriority;
+                $node->browserNav = $parent->browserNav;
+
+                $node->xmlInsertChangeFreq = $parent->xmlInsertChangeFreq;
+                $node->xmlInsertPriority = $parent->xmlInsertPriority;
 
                 $node->modified = intval(@$topic->last_post_time ? $topic->last_post_time : $topic->time);
-                $node->link = KunenaRoute::normalize('index.php?option=com_kunena&view=topic&catid=' . $topic->category_id . '&id=' . $topic->id);
+                $node->link = KunenaRoute::normalize(
+                    new URI(
+                        (string) 'index.php?option=com_kunena&view=topic&catid='
+                        . $topic->category_id . '&id=' . $topic->id
+                    )
+                );
                 $node->expandible = false;
                 $node->secure = $parent->secure;
                 $node->lastmod = $parent->lastmod;
-                if ($sitemap->printNode($node) !== FALSE) {
-                    // Pagination will not work with K2.0, revisit this when that version is out and stable
-                    if ($params['include_pagination'] && isset($topic->msgcount) && $topic->msgcount > self::$config->messages_per_page) {
-                        $msgPerPage = self::$config->messages_per_page;
-                        $threadPages = ceil($topic->msgcount / $msgPerPage);
-                        for ($i = 2; $i <= $threadPages; $i++) {
-                            $subnode = new stdclass;
-                            $subnode->id = $node->id;
-                            $subnode->uid = $node->uid . 'p' . $i;
-                            $subnode->name = "[$i]";
-                            $subnode->seq = $i;
-                            $subnode->link = $node->link . '&limit=' . $msgPerPage . '&limitstart=' . (($i - 1) * $msgPerPage);
-                            $subnode->browserNav = $node->browserNav;
-                            $subnode->priority = $node->priority;
-                            $subnode->changefreq = $node->changefreq;
 
-                            $subnode->xmlInsertChangeFreq = $node->xmlInsertChangeFreq;
-                            $subnode->xmlInsertPriority = $node->xmlInsertPriority;
+                if (!isset($parent->subnodes))
+                    $parent->subnodes = new \stdClass();
 
-                            $subnode->modified = $node->modified;
-                            $subnode->secure = $node->secure;
-                            $subnode->lastmod = $node->lastmod;
-                            $sitemap->printNode($subnode);
-                        }
+
+
+                // Pagination will not work with K2.0, revisit this when that version is out and stable
+                if ($params['include_pagination'] && isset($topic->msgcount) && $topic->msgcount > self::$config->messagesPerPage) {
+                    $msgPerPage = self::$config->messagesPerPage;
+                    $threadPages = ceil($topic->msgcount / $msgPerPage);
+                    for ($i = 2; $i <= $threadPages; $i++) {
+                        $subnode = new stdclass;
+                        $subnode->id = $node->id;
+                        $id = $subnode->uid = $node->uid . 'p' . $i;
+                        $subnode->name = "[$i]";
+                        $subnode->seq = $i;
+                        $subnode->link = $node->link . '&limit=' . $msgPerPage . '&limitstart=' . (($i - 1) * $msgPerPage);
+                        $subnode->browserNav = $node->browserNav;
+                        $subnode->priority = $node->priority;
+                        $subnode->changefreq = $node->changefreq;
+
+                        $subnode->xmlInsertChangeFreq = $node->xmlInsertChangeFreq;
+                        $subnode->xmlInsertPriority = $node->xmlInsertPriority;
+
+                        $subnode->modified = $node->modified;
+                        $subnode->secure = $node->secure;
+                        $subnode->lastmod = $node->lastmod;
+
+                        if (!isset($node->subnodes))
+                            $node->subnodes = new \stdClass();
+
+                        $node->subnodes->$id = $subnode;
                     }
+
+                    $parent->subnodes->$id = $node;
                 }
             }
         }
-        $sitemap->changeLevel(-1);
     }
 
     private static function loadKunenaApi()
@@ -223,7 +251,7 @@ class schuweb_sitemap_kunena
         if (!defined('KUNENA_LOADED')) {
             jimport('joomla.application.component.helper');
             // Check if Kunena component is installed/enabled
-            if (!JComponentHelper::isEnabled('com_kunena', true)) {
+            if (!ComponentHelper::isEnabled('com_kunena')) {
                 return false;
             }
 

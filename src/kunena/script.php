@@ -1,13 +1,14 @@
 <?php
 /**
- * @package             SchuWeb Sitemap
- *
- * @version             sw.build.version
- * @author              Sven Schultschik
- * @copyright (C)       2022 Sven Schultschik. All rights reserved
- * @license             http://www.gnu.org/copyleft/gpl.html GNU/GPL
- * @link                http://www.schultschik.de
- **/
+ * @package     SchuWeb Sitemap
+ * @subpackage  schuweb_sitemap_kunena
+ * 
+ * @version     sw.build.version
+ * @copyright   Copyright (C) 2010 - 2023 Sven Schultschik. All rights reserved
+ * @license     GNU General Public License version 3
+ * @author      Sven Schultschik (extensions@schultschik.de)
+ * @link        https://extensions.schultschik.de
+ */
 
 defined('_JEXEC') or die;
 
@@ -30,7 +31,7 @@ class Plgschuweb_sitemapkunenaInstallerScript extends InstallerScript
     {
         // Define the minumum versions to be supported.
         $this->minimumJoomla = '4.0';
-        $this->minimumPhp = '7.4';
+        $this->minimumPhp = '8';
     }
 
     /**
