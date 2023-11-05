@@ -1,4 +1,8 @@
-# SchuWeb Sitemap
+# SchuWeb Sitemap Kunena
+SchuWeb Sitemap Kunena is a plugin to the main application SchuWeb Sitemap.
+SchuWeb Sitemap Kunena must be used with SchuWeb Sitemap and it is not possible
+to use it standalone.
+
 SchuWeb Sitemap is the great, simple and lightweight sitemap extension for Joomla!.
 
 [Project website](https://extensions.schultschik.com/products/schuweb-sitemap)
