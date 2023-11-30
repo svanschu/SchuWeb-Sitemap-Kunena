@@ -106,7 +106,7 @@ class schuweb_sitemap_kunena
             if (!in_array($ordering, array('id', 'ordering', 'time', 'subject', 'hits')))
                 $ordering = 'ordering';
             $params['topics_order'] = 't.`' . $ordering . '`';
-            $params['include_pagination'] = ($sitemap->view == 'xml');
+            $params['include_pagination'] = $sitemap->isXmlsitemap();
 
             $params['limit'] = 0;
             $params['days'] = '';
