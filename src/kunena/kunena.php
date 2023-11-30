@@ -35,8 +35,10 @@ class schuweb_sitemap_kunena
      */
     static function getTree(&$sitemap, &$parent, &$params)
     {
-        // This component does not provide news content. don't waste time/resources
-        if ($sitemap->isNewssitemap())
+        // This component does not provide news content.
+        // An image sitemap does not make sense, hence those are community postings
+        // don't waste time/resources
+        if ($sitemap->isNewssitemap() || $sitemap->isImagesitemap())
             return false;
 
         // Make sure that we can load the kunena api
