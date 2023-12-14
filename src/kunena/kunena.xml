@@ -16,7 +16,7 @@
     <updateservers>
         <server type="extension" priority="1" 
             name="SchuWeb Sitemap - SchuWeb Sitemap Integration for Kunena">
-            https://raw.githubusercontent.com/svanschu/SchuWeb-Sitemap/master/update/schuweb_sitemap_plugin_kunena.xml
+            https://raw.githubusercontent.com/svanschu/SchuWeb-Sitemap-Kunena/main/update.xml
         </server>
     </updateservers>
     <languages folder="language">
