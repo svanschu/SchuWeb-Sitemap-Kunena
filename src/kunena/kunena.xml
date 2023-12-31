@@ -19,6 +19,7 @@
             https://raw.githubusercontent.com/svanschu/SchuWeb-Sitemap-Kunena/main/update.xml
         </server>
     </updateservers>
+    <changelogurl>https://raw.githubusercontent.com/svanschu/SchuWeb-Sitemap-Kunena/main/changelog.xml</changelogurl>
     <languages folder="language">
         <language tag="en-GB">en-GB/plg_schuweb_sitemap_kunena.ini</language>
         <language tag="en-GB">en-GB/plg_schuweb_sitemap_kunena.sys.ini</language>
