@@ -2,6 +2,23 @@
     <changelog>
         <element>schuweb_sitemap_kunena</element>
         <type>plugin</type>
+        <version>5.0.1</version>
+        <fix>
+            <item>fix missing topics and wrong structure</item>
+            <item>fix missing Itemid in sitemap.xml</item>
+        </fix>
+        <addition>
+        </addition>
+        <change>
+        </change>
+        <remove>
+        </remove>
+        <note>
+        </note>
+    </changelog>
+    <changelog>
+        <element>schuweb_sitemap_kunena</element>
+        <type>plugin</type>
         <version>5.0.0</version>
         <fix>
         </fix>
