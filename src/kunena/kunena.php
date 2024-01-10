@@ -163,8 +163,23 @@ class schuweb_sitemap_kunena
 
             $parent->subnodes->$id = $node;
 
+            self::getTopics($sitemap, $node, $params, $cat->id);
+
             self::getCategoryTree($sitemap, $parent, $params, $cat->id);
         }
+    }
+
+    /**
+     * Include the topics of the carrying category
+     * 
+     * @param \SchuWeb\Component\Sitemap\Site\Model\SitemapModel $sitemap
+     * @param \stdClass $parent
+     * @param \Joomla\Registry\Registry $params
+     * @param int $parentCat
+     * 
+     * @since __BUMB_VERSION__
+     */
+    static function getTopics(&$sitemap, &$parent, &$params, &$parentCat){
 
         if ($params['include_topics']) {
 
@@ -209,8 +224,6 @@ class schuweb_sitemap_kunena
                 if (!isset($parent->subnodes))
                     $parent->subnodes = new \stdClass();
 
-
-
                 // Pagination will not work with K2.0, revisit this when that version is out and stable
                 if ($params['include_pagination'] && isset($topic->msgcount) && $topic->msgcount > self::$config->messagesPerPage) {
                     $msgPerPage = self::$config->messagesPerPage;
@@ -238,9 +251,9 @@ class schuweb_sitemap_kunena
 
                         $node->subnodes->$id = $subnode;
                     }
-
-                    $parent->subnodes->$id = $node;
                 }
+
+                $parent->subnodes->$id = $node;
             }
         }
     }
