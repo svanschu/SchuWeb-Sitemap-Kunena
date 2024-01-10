@@ -27,7 +27,7 @@ class schuweb_sitemap_kunena
     /**
      * ItemID of the top Kunena menu item
      * 
-     * @since __BUMB_VERSION__
+     * @since 5.0.1
      */
     static $topItemID;
 
@@ -187,7 +187,7 @@ class schuweb_sitemap_kunena
      * 
      * @param string $link
      * 
-     * @since __BUMB_VERSION__
+     * @since 5.0.1
      */
     static function checkItemID(&$link){
         if (!str_contains($link, 'Itemid'))
@@ -206,7 +206,7 @@ class schuweb_sitemap_kunena
      * @param \Joomla\Registry\Registry $params
      * @param int $parentCat
      * 
-     * @since __BUMB_VERSION__
+     * @since 5.0.1
      */
     static function getTopics(&$sitemap, &$parent, &$params, &$parentCat){
 
