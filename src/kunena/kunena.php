@@ -25,6 +25,13 @@ class schuweb_sitemap_kunena
     static $config;
 
     /**
+     * ItemID of the top Kunena menu item
+     * 
+     * @since __BUMB_VERSION__
+     */
+    static $topItemID;
+
+    /**
      * @param \SchuWeb\Component\Sitemap\Site\Model\SitemapModel $sitemap
      * @param \stdClass $parent
      * @param \Joomla\Registry\Registry $params
@@ -46,6 +53,9 @@ class schuweb_sitemap_kunena
             self::$config = KunenaFactory::getConfig();
             self::$profile = KunenaFactory::getUser();
         }
+
+        if (is_null(self::$topItemID))
+            self::$topItemID = $parent->id;
 
         $user = Factory::getApplication()->getIdentity();
 
@@ -150,6 +160,7 @@ class schuweb_sitemap_kunena
                     (string) 'index.php?option=com_kunena&view=category&catid=' . $cat->id
                 )
             );
+            self::checkItemID($node->link);
             $node->expandible = true;
             $node->secure = $parent->secure;
 
@@ -167,6 +178,24 @@ class schuweb_sitemap_kunena
 
             self::getCategoryTree($sitemap, $parent, $params, $cat->id);
         }
+    }
+
+    /**
+     * Check if the given link has an Itemid. Kunena does this for the frontend
+     * but the XML is generated in the backend and there the Itemid is not be
+     * added by Kunena
+     * 
+     * @param string $link
+     * 
+     * @since __BUMB_VERSION__
+     */
+    static function checkItemID(&$link){
+        if (!str_contains($link, 'Itemid'))
+            $link = KunenaRoute::normalize(
+                new Uri(
+                    (string) $link . '&Itemid=' . self::$topItemID
+                )
+            );
     }
 
     /**
@@ -217,6 +246,7 @@ class schuweb_sitemap_kunena
                         . $topic->category_id . '&id=' . $topic->id
                     )
                 );
+                self::checkItemID($node->link);
                 $node->expandible = false;
                 $node->secure = $parent->secure;
                 $node->lastmod = $parent->lastmod;
