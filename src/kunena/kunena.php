@@ -152,8 +152,6 @@ class schuweb_sitemap_kunena
             $node->priority = $params['cat_priority'];
             $node->changefreq = $params['cat_changefreq'];
             $node->browserNav = $parent->browserNav;
-            $node->xmlInsertChangeFreq = $parent->xmlInsertChangeFreq;
-            $node->xmlInsertPriority = $parent->xmlInsertPriority;
 
             $node->link = KunenaRoute::normalize(
                 new Uri(
@@ -164,7 +162,6 @@ class schuweb_sitemap_kunena
             $node->expandible = true;
             $node->secure = $parent->secure;
 
-            $node->lastmod = $parent->lastmod;
             $node->modified = intval($cat->last_post_time);
 
             if (!isset($parent->subnodes))
@@ -236,9 +233,6 @@ class schuweb_sitemap_kunena
 
                 $node->browserNav = $parent->browserNav;
 
-                $node->xmlInsertChangeFreq = $parent->xmlInsertChangeFreq;
-                $node->xmlInsertPriority = $parent->xmlInsertPriority;
-
                 $node->modified = intval(@$topic->last_post_time ? $topic->last_post_time : $topic->time);
                 $node->link = KunenaRoute::normalize(
                     new URI(
@@ -249,7 +243,6 @@ class schuweb_sitemap_kunena
                 self::checkItemID($node->link);
                 $node->expandible = false;
                 $node->secure = $parent->secure;
-                $node->lastmod = $parent->lastmod;
 
                 if (!isset($parent->subnodes))
                     $parent->subnodes = new \stdClass();
@@ -269,12 +262,8 @@ class schuweb_sitemap_kunena
                         $subnode->priority = $node->priority;
                         $subnode->changefreq = $node->changefreq;
 
-                        $subnode->xmlInsertChangeFreq = $node->xmlInsertChangeFreq;
-                        $subnode->xmlInsertPriority = $node->xmlInsertPriority;
-
                         $subnode->modified = $node->modified;
                         $subnode->secure = $node->secure;
-                        $subnode->lastmod = $node->lastmod;
 
                         if (!isset($node->subnodes))
                             $node->subnodes = new \stdClass();
