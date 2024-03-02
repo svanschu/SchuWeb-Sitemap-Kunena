@@ -1,5 +1,23 @@
 <changelogs>
     <changelog>
+        <element>com_schuweb_sitemap</element>
+        <type>component</type>
+        <version>5.1.0</version>
+        <fix>
+            <item>fix possible null pointer</item>
+        </fix>
+        <addition>
+        </addition>
+        <change>
+            <item>overall code improvements</item>
+        </change>
+        <remove>
+            <item>remove obsolete daisy-chained parameters</item>
+        </remove>
+        <note>
+        </note>
+    </changelog>
+    <changelog>
         <element>schuweb_sitemap_kunena</element>
         <type>plugin</type>
         <version>5.0.1</version>
