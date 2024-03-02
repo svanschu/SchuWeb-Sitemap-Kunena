@@ -58,6 +58,10 @@ class schuweb_sitemap_kunena
             self::$topItemID = $parent->id;
 
         $user = Factory::getApplication()->getIdentity();
+        if (is_null($user))
+            $groups = [0 => 1];
+        else
+            $groups = $user->getAuthorisedViewLevels();
 
         $link_query = parse_url($parent->link);
         if (!isset($link_query['query'])) {
@@ -97,7 +101,7 @@ class schuweb_sitemap_kunena
 
         $params['cat_priority'] = $priority;
         $params['cat_changefreq'] = $changefreq;
-        $params['groups'] = implode(',', $user->getAuthorisedViewLevels());
+        $params['groups'] = implode(',', $groups);
 
         $priority = ArrayHelper::getValue($params, 'topic_priority', $parent->priority);
         $changefreq = ArrayHelper::getValue($params, 'topic_changefreq', $parent->changefreq);
