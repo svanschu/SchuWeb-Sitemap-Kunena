@@ -7,6 +7,8 @@
  * @link        extensions.schultschik.de
  */
 
+namespace SchuWeb\Plugin\SchuWeb_Sitemap\Kunena\Extension;
+
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
@@ -17,10 +19,27 @@ use Kunena\Forum\Libraries\Forum\Topic\KunenaTopicHelper;
 use Kunena\Forum\Libraries\Route\KunenaRoute;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\Uri\Uri;
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\Event\SubscriberInterface;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
+use SchuWeb\Component\Sitemap\Site\Event\MenuItemPrepareEvent;
+use SchuWeb\Component\Sitemap\Site\Event\TreePrepareEvent;
 
 /** Handles Kunena forum structure */
-class schuweb_sitemap_kunena
+class Kunena extends CMSPlugin implements SubscriberInterface
 {
+    /**
+     * @since __BUMP_VERSION__
+     */
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            //'onGetMenus' => 'onGetMenus',
+            'onGetTree'  => 'onGetTree',
+        ];
+    }
+
     static $profile;
     static $config;
 
@@ -37,17 +56,32 @@ class schuweb_sitemap_kunena
      * @param \Joomla\Registry\Registry $params
      * 
      */
-    static function getTree(&$sitemap, &$parent, &$params)
+        /**
+     * Expands a com_content menu item
+     *
+     * @param   TreePrepareEvent  Event object
+     *
+     * @return void
+     * @since  __BUMP_VERSION__
+     */
+    public function onGetTree(TreePrepareEvent $event)
+    //static function getTree(&$sitemap, &$parent, &$params)
     {
+        $sitemap = $event->getSitemap();
+        $parent  = $event->getNode();
+
+        if ($parent->option != "com_kunena")
+            return null;
+
         // This component does not provide news content.
         // An image sitemap does not make sense, hence those are community postings
         // don't waste time/resources
         if ($sitemap->isNewssitemap() || $sitemap->isImagesitemap())
-            return false;
+            return null;
 
         // Make sure that we can load the kunena api
         if (!self::loadKunenaApi())
-            return false;
+            return null;
 
         if (!self::$profile) {
             self::$config = KunenaFactory::getConfig();
@@ -83,10 +117,10 @@ class schuweb_sitemap_kunena
                 $catid = 0;
                 break;
             default:
-                return true; // Do not expand links to posts
+                return null; // Do not expand links to posts
         }
 
-        $include_topics = ArrayHelper::getValue($params, 'include_topics', 1);
+        $include_topics = $this->params->get('include_topics', 1);
         $include_topics = ($include_topics == 1
             || ($include_topics == 2 && $sitemap->isXmlsitemap())
             || ($include_topics == 3 && !$sitemap->isXmlsitemap()));
@@ -148,7 +182,7 @@ class schuweb_sitemap_kunena
 
         /* get list of categories */
         foreach ($categories as $cat) {
-            $node = new stdclass;
+            $node = new \stdClass();
             $node->id = $parent->id;
             $node->browserNav = $parent->browserNav;
             $id = $node->uid = 'com_kunenac' . $cat->id;
@@ -227,7 +261,7 @@ class schuweb_sitemap_kunena
 
             //get list of topics
             foreach ($topics as $topic) {
-                $node = new stdclass;
+                $node = new \stdClass;
                 $node->id = $parent->id;
                 $node->browserNav = $parent->browserNav;
                 $id = $node->uid = 'com_kunenat' . $topic->id;
@@ -256,7 +290,7 @@ class schuweb_sitemap_kunena
                     $msgPerPage = self::$config->messagesPerPage;
                     $threadPages = ceil($topic->msgcount / $msgPerPage);
                     for ($i = 2; $i <= $threadPages; $i++) {
-                        $subnode = new stdclass;
+                        $subnode = new \stdclass;
                         $subnode->id = $node->id;
                         $id = $subnode->uid = $node->uid . 'p' . $i;
                         $subnode->name = "[$i]";

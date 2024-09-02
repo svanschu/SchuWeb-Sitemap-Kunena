@@ -9,17 +9,12 @@
     <authorUrl>extensions.schultschik.de</authorUrl>
     <version>sw.build.version</version>
     <description>PLG_SCHUWEB_SITEMAP_KUNENA_DESCRIPTION</description>
+    <namespace path="src">SchuWeb\Plugin\SchuWeb_Sitemap\Kunena</namespace>
     <files>
-        <filename plugin="kunena">kunena.php</filename>
-        <folder>language</folder>
+        <folder plugin="kunena">services</folder>
+        <folder>src</folder>
     </files>
-    <updateservers>
-        <server type="extension" priority="1" 
-            name="SchuWeb Sitemap - SchuWeb Sitemap Integration for Kunena">
-            https://raw.githubusercontent.com/svanschu/SchuWeb-Sitemap-Kunena/main/update.xml
-        </server>
-    </updateservers>
-    <changelogurl>https://raw.githubusercontent.com/svanschu/SchuWeb-Sitemap-Kunena/main/changelog.xml</changelogurl>
+    <scriptfile>script.php</scriptfile>
     <languages folder="language">
         <language tag="en-GB">en-GB/plg_schuweb_sitemap_kunena.ini</language>
         <language tag="en-GB">en-GB/plg_schuweb_sitemap_kunena.sys.ini</language>
@@ -29,7 +24,13 @@
         <language tag="nl-NL">nl-NL/plg_schuweb_sitemap_kunena.ini</language>
         <language tag="ru-RU">ru-RU/plg_schuweb_sitemap_kunena.ini</language>
     </languages>
-    <scriptfile>script.php</scriptfile>
+    <updateservers>
+        <server type="extension" priority="1" 
+            name="SchuWeb Sitemap - SchuWeb Sitemap Integration for Kunena">
+            https://raw.githubusercontent.com/svanschu/SchuWeb-Sitemap-Kunena/main/update.xml
+        </server>
+    </updateservers>
+    <changelogurl>https://raw.githubusercontent.com/svanschu/SchuWeb-Sitemap-Kunena/main/changelog.xml</changelogurl>
     <config>
         <fields name="params">
             <fieldset name="basic">
