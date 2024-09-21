@@ -30,7 +30,7 @@ use SchuWeb\Component\Sitemap\Site\Event\TreePrepareEvent;
 class Kunena extends CMSPlugin implements SubscriberInterface
 {
     /**
-     * @since __BUMP_VERSION__
+     * @since 5.2.0
      */
     public static function getSubscribedEvents(): array
     {
@@ -62,7 +62,7 @@ class Kunena extends CMSPlugin implements SubscriberInterface
      * @param   TreePrepareEvent  Event object
      *
      * @return void
-     * @since  __BUMP_VERSION__
+     * @since  5.2.0
      */
     public function onGetTree(TreePrepareEvent $event)
     //static function getTree(&$sitemap, &$parent, &$params)
