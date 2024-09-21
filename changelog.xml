@@ -1,6 +1,22 @@
 <changelogs>
     <changelog>
-        <element>com_schuweb_sitemap</element>
+        <element>schuweb_sitemap_kunena</element>
+        <type>component</type>
+        <version>5.2.0</version>
+        <fix>
+        </fix>
+        <addition>
+            <item>use namespacing and eventpatcher for plugins</item>
+        </addition>
+        <change>
+        </change>
+        <remove>
+        </remove>
+        <note>
+        </note>
+    </changelog>
+    <changelog>
+        <element>schuweb_sitemap_kunena</element>
         <type>component</type>
         <version>5.1.0</version>
         <fix>
