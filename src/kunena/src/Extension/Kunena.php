@@ -37,9 +37,6 @@ class Kunena extends CMSPlugin implements SubscriberInterface
         ];
     }
 
-    static $profile;
-    static $config;
-
     /**
      * ItemID of the top Kunena menu item
      * 
@@ -73,10 +70,6 @@ class Kunena extends CMSPlugin implements SubscriberInterface
         if (!self::isKunenaActiveAndLoaded())
             return null;
 
-        if (!self::$profile) {
-            self::$config = KunenaFactory::getConfig();
-            self::$profile = KunenaFactory::getUser();
-        }
 
         if (is_null(self::$topItemID))
             self::$topItemID = $parent->id;
@@ -244,7 +237,9 @@ class Kunena extends CMSPlugin implements SubscriberInterface
                 $topics = $topics[1];
             }
 
-            //get list of topics
+            $config = KunenaFactory::getConfig();
+            $msgPerPage = $config->messagesPerPage;
+
             foreach ($topics as $topic) {
                 $node = new \stdClass;
                 $node->id = $parent->id;
@@ -271,8 +266,7 @@ class Kunena extends CMSPlugin implements SubscriberInterface
                     $parent->subnodes = new \stdClass();
 
                 // Pagination will not work with K2.0, revisit this when that version is out and stable
-                if ($params['include_pagination'] && isset($topic->msgcount) && $topic->msgcount > self::$config->messagesPerPage) {
-                    $msgPerPage = self::$config->messagesPerPage;
+                if ($params['include_pagination'] && isset($topic->msgcount) && $topic->msgcount > $msgPerPage) {
                     $threadPages = ceil($topic->msgcount / $msgPerPage);
                     for ($i = 2; $i <= $threadPages; $i++) {
                         $subnode = new \stdclass;
