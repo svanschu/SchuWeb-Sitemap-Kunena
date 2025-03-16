@@ -42,7 +42,7 @@ class Kunena extends CMSPlugin implements SubscriberInterface
      * 
      * @since 5.0.1
      */
-    static $topItemID;
+    private $topItemID;
 
      /**
      * Expands a com_content menu item
@@ -70,9 +70,8 @@ class Kunena extends CMSPlugin implements SubscriberInterface
         if (!self::isKunenaActiveAndLoaded())
             return null;
 
-
-        if (is_null(self::$topItemID))
-            self::$topItemID = $parent->id;
+        if (is_null($this->topItemID))
+            $this->topItemID = $parent->id;
 
         $user = Factory::getApplication()->getIdentity();
         if (is_null($user))
@@ -174,7 +173,7 @@ class Kunena extends CMSPlugin implements SubscriberInterface
                     (string) 'index.php?option=com_kunena&view=category&catid=' . $cat->id
                 )
             );
-            self::checkItemID($node->link);
+            $this->checkItemID($node->link);
             $node->expandible = true;
             $node->secure = $parent->secure;
 
@@ -202,11 +201,11 @@ class Kunena extends CMSPlugin implements SubscriberInterface
      * 
      * @since 5.0.1
      */
-    static function checkItemID(&$link){
+    private function checkItemID(&$link){
         if (!str_contains($link, 'Itemid'))
             $link = KunenaRoute::normalize(
                 new Uri(
-                    (string) $link . '&Itemid=' . self::$topItemID
+                    (string) $link . '&Itemid=' . $this->topItemID
                 )
             );
     }
@@ -258,7 +257,9 @@ class Kunena extends CMSPlugin implements SubscriberInterface
                         . $topic->category_id . '&id=' . $topic->id
                     )
                 );
-                self::checkItemID($node->link);
+
+                $this->checkItemID($node->link);
+                
                 $node->expandible = false;
                 $node->secure = $parent->secure;
 
