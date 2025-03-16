@@ -20,9 +20,6 @@ use Kunena\Forum\Libraries\Route\KunenaRoute;
 use Joomla\Uri\Uri;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\SubscriberInterface;
-use Joomla\Database\DatabaseDriver;
-use Joomla\Database\DatabaseInterface;
-use SchuWeb\Component\Sitemap\Site\Event\MenuItemPrepareEvent;
 use SchuWeb\Component\Sitemap\Site\Event\TreePrepareEvent;
 
 class Kunena extends CMSPlugin implements SubscriberInterface
