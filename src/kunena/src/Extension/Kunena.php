@@ -148,10 +148,10 @@ class Kunena extends CMSPlugin implements SubscriberInterface
 
         $params['table_prefix'] = '#__kunena';
 
-        self::getCategoryTree($sitemap, $parent, $params, $catid);
+        $this->getCategoryTree($sitemap, $parent, $params, $catid);
     }
 
-    static function getCategoryTree(&$sitemap, &$parent, &$params, &$parentCat)
+    private function getCategoryTree(&$sitemap, &$parent, &$params, &$parentCat)
     {
         $categories = KunenaCategoryHelper::getChildren($parentCat);
 
@@ -183,9 +183,9 @@ class Kunena extends CMSPlugin implements SubscriberInterface
 
             $parent->subnodes->$id = $node;
 
-            self::getTopics($sitemap, $node, $params, $cat->id);
+            $this->getTopics($sitemap, $node, $params, $cat->id);
 
-            self::getCategoryTree($sitemap, $parent, $params, $cat->id);
+            $this->getCategoryTree($sitemap, $parent, $params, $cat->id);
         }
     }
 
@@ -217,7 +217,7 @@ class Kunena extends CMSPlugin implements SubscriberInterface
      * 
      * @since 5.0.1
      */
-    static function getTopics(&$sitemap, &$parent, &$params, &$parentCat){
+    private function getTopics(&$sitemap, &$parent, &$params, &$parentCat){
 
         if ($params['include_topics']) {
 
