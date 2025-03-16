@@ -26,7 +26,6 @@ use Joomla\Database\DatabaseInterface;
 use SchuWeb\Component\Sitemap\Site\Event\MenuItemPrepareEvent;
 use SchuWeb\Component\Sitemap\Site\Event\TreePrepareEvent;
 
-/** Handles Kunena forum structure */
 class Kunena extends CMSPlugin implements SubscriberInterface
 {
     /**
@@ -35,7 +34,6 @@ class Kunena extends CMSPlugin implements SubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            //'onGetMenus' => 'onGetMenus',
             'onGetTree'  => 'onGetTree',
         ];
     }
@@ -50,13 +48,7 @@ class Kunena extends CMSPlugin implements SubscriberInterface
      */
     static $topItemID;
 
-    /**
-     * @param \SchuWeb\Component\Sitemap\Site\Model\SitemapModel $sitemap
-     * @param \stdClass $parent
-     * @param \Joomla\Registry\Registry $params
-     * 
-     */
-        /**
+     /**
      * Expands a com_content menu item
      *
      * @param   TreePrepareEvent  Event object
@@ -65,7 +57,6 @@ class Kunena extends CMSPlugin implements SubscriberInterface
      * @since  5.2.0
      */
     public function onGetTree(TreePrepareEvent $event)
-    //static function getTree(&$sitemap, &$parent, &$params)
     {
         $sitemap = $event->getSitemap();
         $parent  = $event->getNode();
@@ -172,15 +163,10 @@ class Kunena extends CMSPlugin implements SubscriberInterface
         self::getCategoryTree($sitemap, $parent, $params, $catid);
     }
 
-    /*
-     * Builds the Kunena's tree
-     */
     static function getCategoryTree(&$sitemap, &$parent, &$params, &$parentCat)
     {
-        // Load categories
         $categories = KunenaCategoryHelper::getChildren($parentCat);
 
-        /* get list of categories */
         foreach ($categories as $cat) {
             $node = new \stdClass();
             $node->id = $parent->id;
