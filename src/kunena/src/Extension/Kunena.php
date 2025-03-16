@@ -108,8 +108,8 @@ class Kunena extends CMSPlugin implements SubscriberInterface
             || ($include_topics == 3 && !$sitemap->isXmlsitemap()));
         $params['include_topics'] = $include_topics;
 
-        $priority = ArrayHelper::getValue($params, 'cat_priority', $parent->priority);
-        $changefreq = ArrayHelper::getValue($params, 'cat_changefreq', $parent->changefreq);
+        $priority = $this->params->get('cat_priority', $parent->priority);
+        $changefreq = $this->params->get('cat_changefreq', $parent->changefreq);
         if ($priority == '-1')
             $priority = $parent->priority;
         if ($changefreq == '-1')
@@ -119,8 +119,8 @@ class Kunena extends CMSPlugin implements SubscriberInterface
         $params['cat_changefreq'] = $changefreq;
         $params['groups'] = implode(',', $groups);
 
-        $priority = ArrayHelper::getValue($params, 'topic_priority', $parent->priority);
-        $changefreq = ArrayHelper::getValue($params, 'topic_changefreq', $parent->changefreq);
+        $priority = $this->params->get( 'topic_priority', $parent->priority);
+        $changefreq = $this->params->get('topic_changefreq', $parent->changefreq);
         if ($priority == '-1')
             $priority = $parent->priority;
 
@@ -131,7 +131,7 @@ class Kunena extends CMSPlugin implements SubscriberInterface
         $params['topic_changefreq'] = $changefreq;
 
         if ($include_topics) {
-            $ordering = ArrayHelper::getValue($params, 'topics_order', 'ordering');
+            $ordering = $this->params->get( 'topics_order', 'ordering');
             if (!in_array($ordering, array('id', 'ordering', 'time', 'subject', 'hits')))
                 $ordering = 'ordering';
             $params['topics_order'] = 't.`' . $ordering . '`';
@@ -139,11 +139,11 @@ class Kunena extends CMSPlugin implements SubscriberInterface
 
             $params['limit'] = 0;
             $params['days'] = '';
-            $limit = ArrayHelper::getValue($params, 'max_topics', '');
+            $limit = $this->params->get( 'max_topics', '');
             if (intval($limit))
                 $params['limit'] = $limit;
 
-            $days = ArrayHelper::getValue($params, 'max_age', '');
+            $days = $this->params->get( 'max_age', '');
             $params['days'] = false;
             if (intval($days))
                 $params['days'] = ($sitemap->now - (intval($days) * 86400));
