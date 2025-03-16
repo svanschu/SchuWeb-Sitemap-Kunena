@@ -17,7 +17,6 @@ use Kunena\Forum\Libraries\Factory\KunenaFactory;
 use Kunena\Forum\Libraries\Forum\Category\KunenaCategoryHelper;
 use Kunena\Forum\Libraries\Forum\Topic\KunenaTopicHelper;
 use Kunena\Forum\Libraries\Route\KunenaRoute;
-use Joomla\CMS\Component\ComponentHelper;
 use Joomla\Uri\Uri;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\SubscriberInterface;
@@ -71,7 +70,7 @@ class Kunena extends CMSPlugin implements SubscriberInterface
             return null;
 
         // Make sure that we can load the kunena api
-        if (!self::loadKunenaApi())
+        if (!self::isKunenaActiveAndLoaded())
             return null;
 
         if (!self::$profile) {
@@ -301,23 +300,8 @@ class Kunena extends CMSPlugin implements SubscriberInterface
         }
     }
 
-    private static function loadKunenaApi()
+    private static function isKunenaActiveAndLoaded()
     {
-        if (!defined('KUNENA_LOADED')) {
-            jimport('joomla.application.component.helper');
-            // Check if Kunena component is installed/enabled
-            if (!ComponentHelper::isEnabled('com_kunena')) {
-                return false;
-            }
-
-            // Check if Kunena API exists
-            $kunena_api = JPATH_ADMINISTRATOR . '/components/com_kunena/api.php';
-            if (!is_file($kunena_api))
-                return false;
-
-            // Load Kunena API
-            require_once($kunena_api);
-        }
-        return true;
+       return !defined('KUNENA_LOADED') ? false : true;
     }
 }
