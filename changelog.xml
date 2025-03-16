@@ -2,6 +2,29 @@
     <changelog>
         <element>schuweb_sitemap_kunena</element>
         <type>component</type>
+        <version>5.2.1</version>
+        <fix>
+            <item>fix deprecated getDbo()</item>
+            <item>fix parameter not used from plugin</item>
+        </fix>
+        <addition>
+        </addition>
+        <change>
+            <item>simplify check if Kunena is active and loaded</item>
+            <item>simplify get msgPerPage config</item>
+            <item>rework itemID check</item>
+            <item>change from public static to private OO</item>
+        </change>
+        <remove>
+            <item>remove obsolete comments</item>
+            <item>remove unused dependencies</item>
+        </remove>
+        <note>
+        </note>
+    </changelog>
+    <changelog>
+        <element>schuweb_sitemap_kunena</element>
+        <type>component</type>
         <version>5.2.0</version>
         <fix>
         </fix>
