@@ -200,12 +200,13 @@ class Kunena extends CMSPlugin implements SubscriberInterface
      * @since 5.0.1
      */
     private function checkItemID(&$link){
-        if (!str_contains($link, 'Itemid'))
-            $link = KunenaRoute::normalize(
-                new Uri(
-                    (string) $link . '&Itemid=' . $this->topItemID
-                )
-            );
+        $uri = new Uri((string) $link);
+
+        // Kunena sets Itemid=0 if it does not find a Kunena menu item of its own
+        if (!(int) $uri->getVar('Itemid')) {
+            $uri->setVar('Itemid', (int) $this->topItemID);
+            $link = KunenaRoute::normalize($uri);
+        }
     }
 
     /**
