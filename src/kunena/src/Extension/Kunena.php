@@ -14,6 +14,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\Utilities\ArrayHelper;
+use Kunena\Forum\Libraries\Access\KunenaAccess;
 use Kunena\Forum\Libraries\Factory\KunenaFactory;
 use Kunena\Forum\Libraries\Forum\Category\KunenaCategoryHelper;
 use Kunena\Forum\Libraries\Forum\Topic\KunenaTopicHelper;
@@ -71,12 +72,6 @@ class Kunena extends CMSPlugin implements SubscriberInterface
         if (is_null($this->topItemID))
             $this->topItemID = $parent->id;
 
-        $user = Factory::getApplication()->getIdentity();
-        if (is_null($user))
-            $groups = [0 => 1];
-        else
-            $groups = $user->getAuthorisedViewLevels();
-
         $link_query = parse_url($parent->link);
         if (!isset($link_query['query'])) {
             return;
@@ -115,7 +110,11 @@ class Kunena extends CMSPlugin implements SubscriberInterface
 
         $params['cat_priority'] = $priority;
         $params['cat_changefreq'] = $changefreq;
-        $params['groups'] = implode(',', $groups);
+        // The XML sitemap is public: only include categories a guest may read,
+        // independent of the user who creates the file (e.g. an admin in the backend)
+        $params['allowed'] = $sitemap->isXmlsitemap()
+            ? KunenaAccess::getInstance()->getAllowedCategories(0)
+            : null;
 
         $priority = $this->params->get( 'topic_priority', $parent->priority);
         $changefreq = $this->params->get('topic_changefreq', $parent->changefreq);
@@ -157,6 +156,10 @@ class Kunena extends CMSPlugin implements SubscriberInterface
         $categories = KunenaCategoryHelper::getChildren($parentCat);
 
         foreach ($categories as $cat) {
+            if (is_array($params['allowed']) && !isset($params['allowed'][$cat->id])) {
+                continue;
+            }
+
             $node = new \stdClass();
             $node->id = $parent->id;
             $node->browserNav = $parent->browserNav;
