@@ -11,6 +11,7 @@ namespace SchuWeb\Plugin\SchuWeb_Sitemap\Kunena\Extension;
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\Utilities\ArrayHelper;
 use Kunena\Forum\Libraries\Factory\KunenaFactory;
@@ -292,8 +293,38 @@ class Kunena extends CMSPlugin implements SubscriberInterface
         }
     }
 
-    private static function isKunenaActiveAndLoaded()
+    /**
+     * Make sure the Kunena API is loaded.
+     * Kunena 6 loads it in its system plugin, Kunena 7 only when the component is booted,
+     * which does not happen for the backend, the scheduler or the HTML sitemap.
+     *
+     * @return bool
+     *
+     * @since __BUMP_VERSION__
+     */
+    private static function isKunenaActiveAndLoaded(): bool
     {
-       return !defined('KUNENA_LOADED') ? false : true;
+        if (defined('KUNENA_LOADED')) {
+            return true;
+        }
+
+        if (!ComponentHelper::isEnabled('com_kunena')) {
+            return false;
+        }
+
+        try {
+            // Kunena 7: loads the API and its autoloader
+            Factory::getApplication()->bootComponent('com_kunena');
+
+            // Kunena 6 without its system plugin
+            $api = JPATH_ADMINISTRATOR . '/components/com_kunena/api/api.php';
+            if (!defined('KUNENA_LOADED') && is_file($api)) {
+                require_once $api;
+            }
+        } catch (\Throwable $e) {
+            return false;
+        }
+
+        return defined('KUNENA_LOADED');
     }
 }
